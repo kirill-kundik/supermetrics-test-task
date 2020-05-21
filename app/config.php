@@ -9,6 +9,7 @@ define('SCRIPT', str_replace('\\', '/', rtrim(__DIR__, '/')) . '/');
 define('SYSTEM', SCRIPT . 'System/');
 define('CONTROLLERS', SCRIPT . 'Application/Controllers/');
 define('MODELS', SCRIPT . 'Application/Models/');
+define('VIEWS', SCRIPT . 'Application/Views/');
 
 // Config Database
 define('DATABASE', [
