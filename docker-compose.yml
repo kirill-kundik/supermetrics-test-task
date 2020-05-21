@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+
+  db:
+    image: mysql:5.7
+    container_name: php_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: $DB_NAME
+      MYSQL_USER: $DB_USER
+      MYSQL_PASSWORD: $DB_PASS
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - ./tmp/db/:/var/lib/mysql
+
+  web:
+    image: php:7.4.6-apache
+    container_name: php_web
+    restart: on-failure
+    environment:
+      - DB_PORT
+      - DB_HOST
+      - DB_DRIVER
+      - DB_PREFIX
+      - DB_NAME
+      - DB_USER
+      - DB_PASS
+    depends_on:
+      - db
+    volumes:
+      - ./app/:/var/www/html/
+    ports:
+      - "127.0.0.1:8080:80"
+    stdin_open: true
+    tty: true
