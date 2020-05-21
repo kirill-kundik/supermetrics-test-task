@@ -9,7 +9,8 @@ use Database\DatabaseAdapter;
 abstract class Model
 {
     private DatabaseAdapter $conn;
-    protected $tablename;
+
+    protected string $tablename;
 
     public final function __construct()
     {

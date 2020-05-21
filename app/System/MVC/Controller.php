@@ -11,25 +11,26 @@ abstract class Controller
     public $request;
     public $response;
 
-    protected $modelName;
-    protected $viewName;
+    protected $modelName = null;
+    protected $viewName = null;
 
-    private $model;
-    private $view;
+    private $model = null;
+    private $view = null;
 
     public function __construct()
     {
-        if (!isset($this->modelName))
-            trigger_error(get_class($this) . ' must have a $modelName');
-        if (!isset($this->viewName))
-            trigger_error(get_class($this) . ' must have a $viewName');
-
         $this->request = $GLOBALS['request'];
         $this->response = $GLOBALS['response'];
 
         try {
-            $this->model = $this->loadResource(MODELS, $this->modelName);
-            $this->view = $this->loadResource(VIEWS, $this->viewName);
+            if (isset($this->modelName))
+                $this->model = $this->loadResource(MODELS, $this->modelName);
+            else
+                $this->model = null;
+            if (isset($this->viewName))
+                $this->view = $this->loadResource(VIEWS, $this->viewName);
+            else
+                $this->view = null;
         } catch (Exception $e) {
             trigger_error($e->getMessage());
         }
