@@ -80,11 +80,6 @@ class Response
         $this->setVersion('1.1');
     }
 
-    public function sendStatus(int $code)
-    {
-        $this->setHeader(sprintf('HTTP/1.1 ' . $code . ' %s', $this->getStatusCodeText($code)));
-    }
-
     public function render()
     {
         if ($this->content) {
@@ -146,16 +141,16 @@ class Response
      */
     public function setContent(string $content)
     {
-        $this->content = json_encode($content);
+        $this->content = $content;
+    }
+
+    public function setStatus(int $code)
+    {
+        $this->setHeader(sprintf('HTTP/1.1 ' . $code . ' %s', $this->getStatusCodeText($code)));
     }
 
     public function getStatusCodeText(int $code)
     {
         return (string)isset($this->statusTexts[$code]) ? $this->statusTexts[$code] : 'unknown status';
-    }
-
-    public function setStatusCode(int $code)
-    {
-        $this->setHeader(sprintf('HTTP/1.1 ' . $code . ' %s', $this->getStatusCodeText($code)));
     }
 }
