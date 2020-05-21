@@ -153,4 +153,9 @@ class Response
     {
         return (string)isset($this->statusTexts[$code]) ? $this->statusTexts[$code] : 'unknown status';
     }
+
+    public function setStatusCode(int $code)
+    {
+        $this->setHeader(sprintf('HTTP/1.1 ' . $code . ' %s', $this->getStatusCodeText($code)));
+    }
 }
