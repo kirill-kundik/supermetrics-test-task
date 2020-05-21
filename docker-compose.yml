@@ -17,7 +17,7 @@ services:
       - ./tmp/db/:/var/lib/mysql
 
   web:
-    image: php:7.4.6-apache
+    build: .
     container_name: php_web
     restart: on-failure
     environment:
