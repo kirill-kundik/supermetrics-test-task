@@ -29,6 +29,8 @@ services:
       - DB_NAME
       - DB_USER
       - DB_PASS
+      - SUPERMETRICS_API_URL
+      - APP_FOLDER
     depends_on:
       - db
     volumes:
