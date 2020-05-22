@@ -1,8 +1,5 @@
 <?php
 
-$router->get('/', function () {
-    echo 'Welcome ';
-});
+$router->post('/stats', 'postsStats@post');
 
-$router->get('/home', 'home@index');
-
+$router->get('/statsTest', 'postsStats@test');
