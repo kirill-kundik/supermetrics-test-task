@@ -1,5 +1,7 @@
 <?php
 
+require 'utils.php';
+
 // autoload class
 function autoload($class)
 {

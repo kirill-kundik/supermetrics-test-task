@@ -23,6 +23,7 @@ class Request
 
     public function post(string $key = '')
     {
+        $_POST = json_decode(file_get_contents('php://input'), true);
         if ($key != '')
             return isset($_POST[$key]) ? $this->clean($_POST[$key]) : null;
 

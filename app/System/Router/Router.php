@@ -74,7 +74,7 @@ class Router
         if (substr($pattern, -1) === '/') {
             $patternAsRegex = $patternAsRegex . '?';
         }
-        $patternAsRegex = '@^' . $patternAsRegex . '$@';
+        $patternAsRegex = '@^' . $patternAsRegex . '(&amp;)*@';
 
         // check match request url
         if (preg_match($patternAsRegex, $url, $paramsValue)) {
@@ -165,6 +165,6 @@ class Router
     private function sendNotFound()
     {
         $this->response->setStatus(404);
-        $this->response->setContent(['error' => 'Route not found', 'status_code' => 404]);
+        $this->response->setContent(json_encode(['error' => 'Route not found', 'status_code' => 404]));
     }
 }

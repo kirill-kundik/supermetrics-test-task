@@ -5,17 +5,19 @@ namespace MVC;
 
 
 use Exception;
+use Http\Request;
+use Http\Response;
 
 class Controller
 {
-    public $request;
-    public $response;
+    public Request $request;
+    public Response $response;
 
-    protected $modelName = null;
-    protected $viewName = null;
+    protected ?string $modelName = null;
+    protected ?string $viewName = null;
 
-    private $model = null;
-    private $view = null;
+    protected ?Model $model = null;
+    protected ?View $view = null;
 
     public function __construct()
     {

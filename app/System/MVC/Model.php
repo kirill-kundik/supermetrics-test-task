@@ -5,6 +5,7 @@ namespace MVC;
 
 
 use Database\DatabaseAdapter;
+use Exception;
 
 class Model
 {
@@ -65,9 +66,9 @@ class Model
 
     public function findById($id)
     {
-        $res = $this->getBy(['id' => $id]);
+        $res = $this->findBy(['id' => $id]);
         if (empty($res)) {
-            throw new \Exception("Record not found");
+            throw new Exception("Record not found");
         }
         return $res[0];
     }
