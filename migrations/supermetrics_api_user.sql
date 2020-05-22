@@ -1,6 +1,11 @@
-CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE} COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS test_db COLLATE utf8_general_ci;
 
-USE ${MYSQL_DATABASE};
+CREATE USER 'test_user'@'localhost' IDENTIFIED BY 'test_pass';
+GRANT CREATE, ALTER, INDEX, LOCK TABLES, REFERENCES, UPDATE, DELETE, DROP, SELECT, INSERT ON `test_db`.* TO 'test_user';
+
+FLUSH PRIVILEGES;
+
+USE test_db;
 
 -- DROP TABLE IF EXISTS supermetrics_api_user; -- If you want a clean run
 
