@@ -3,26 +3,24 @@
 
 namespace Database\Drivers;
 
-use \PDO;
+
+use PDO;
 
 final class PDOProxy
 {
-    /**
-     * @var PDO
-     */
     private $pdo = null;
 
     public function __construct($host, $user, $pass, $db, $port)
     {
         try {
-            $this->pdo = \PDO(
+            $this->pdo = new PDO(
                 "mysql:host=" . $host . ";port=" . $port . ";dbname=" . $db,
                 $user,
                 $pass,
                 array(\PDO::ATTR_PERSISTENT => true)
             );
         } catch (\PDOException $e) {
-            trigger_error('Error: Could connect to a database ( ' . $e->getMessage() . '). \nCode : ' . $e->getCode());
+            trigger_error('Error: Could connect to a database (' . $e->getMessage() . '). \nCode : ' . $e->getCode());
             exit();
         }
 

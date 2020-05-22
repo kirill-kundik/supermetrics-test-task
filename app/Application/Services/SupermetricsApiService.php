@@ -1,11 +1,5 @@
 <?php
 
-
-namespace Services;
-
-
-use Models\UserModel;
-
 class SupermetricsApiService
 {
     private string $apiBaseUrl;

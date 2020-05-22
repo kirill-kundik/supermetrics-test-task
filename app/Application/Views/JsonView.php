@@ -1,15 +1,14 @@
 <?php
 
-
-namespace Views;
-
-
 use MVC\View;
 
 class JsonView extends View
 {
-    public function render($content)
+    public function render(?array $content = null): ?string
     {
-        return json_encode($content);
+        if (!is_null($content))
+            return json_encode($content);
+        else
+            null;
     }
 }
