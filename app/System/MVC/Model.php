@@ -6,17 +6,13 @@ namespace MVC;
 
 use Database\DatabaseAdapter;
 
-abstract class Model
+class Model
 {
-    private DatabaseAdapter $conn;
-
+    protected DatabaseAdapter $conn;
     protected string $tablename;
 
     public final function __construct()
     {
-        if (!isset($this->tablename))
-            trigger_error(get_class($this) . ' must have a $tablename');
-
         $this->conn = new DatabaseAdapter(
             DATABASE['Driver'],
             DATABASE['Host'],
@@ -27,25 +23,14 @@ abstract class Model
         );
     }
 
-    public function findAll()
+    private function escapeFunction($value)
     {
-        return $this->conn->query("SELECT * FROM $this->tablename");
+        return $this->conn->escape($value);
     }
 
-    public function findById($id)
+    protected function update($values, $id = null)
     {
-        $id = $this->conn->escape($id);
-        $res = $this->conn->query("SELECT * FROM $this->tablename WHERE id = $id");
-        if (empty($res)) {
-            throw new \Exception("Record not found");
-        }
-        return $res[0];
-    }
-
-    public function update($fields, $values, $id = null)
-    {
-        assert(count($fields) == count($values), 'Fields and Values must be same size');
-        $fields = array_map(array(&$this, "escapeFunction"), $fields);
+        $fields = array_map(array(&$this, "escapeFunction"), array_keys($values));
         $values = array_map(array(&$this, "escapeFunction"), $values);
 
         $stmt = "UPDATE $this->tablename SET ";
@@ -63,6 +48,50 @@ abstract class Model
         $this->conn->query($stmt);
     }
 
+    protected function insert($values)
+    {
+        $fields = array_map(array(&$this, "escapeFunction"), array_keys($values));
+        $values = array_map(array(&$this, "escapeFunction"), $values);
+
+        $stmt = "INSERT INTO $this->tablename(" . join(", ", $fields) . ") VALUES (" . join(",", $values) . ")";
+        $this->conn->query($stmt);
+        return $this->conn->getLastId();
+    }
+
+    public function findAll()
+    {
+        return $this->conn->query("SELECT * FROM $this->tablename");
+    }
+
+    public function findById($id)
+    {
+        $res = $this->getBy(['id' => $id]);
+        if (empty($res)) {
+            throw new \Exception("Record not found");
+        }
+        return $res[0];
+    }
+
+    public function findBy($values)
+    {
+        $fields = array_map(array(&$this, "escapeFunction"), array_keys($values));
+        $values = array_map(array(&$this, "escapeFunction"), $values);
+
+        $stmt = "SELECT * FROM $this->tablename";
+        if (count($fields) > 0)
+            $stmt .= " WHERE ";
+
+        foreach ($fields as $key => $field) {
+            $value = $values[$key];
+            $stmt .= "$field = $value";
+
+            if ($key < count($fields) - 1)
+                $stmt .= " AND ";
+        }
+
+        return $this->conn->query($stmt);
+    }
+
     public function delete($id = null)
     {
         $stmt = "DELETE FROM $this->tablename";
@@ -73,19 +102,14 @@ abstract class Model
         $this->conn->query($stmt);
     }
 
-    public function insert($fields, $values)
+    public function save($values)
     {
-        assert(count($fields) == count($values), 'Fields and Values must be same size');
-        $fields = array_map(array(&$this, "escapeFunction"), $fields);
-        $values = array_map(array(&$this, "escapeFunction"), $values);
-
-        $stmt = "INSERT INTO $this->tablename(" . join(", ", $fields) . ") VALUES (" . join(",", $values) . ")";
-        $this->conn->query($stmt);
-        return $this->conn->getLastId();
-    }
-
-    private function escapeFunction($value)
-    {
-        return $this->conn->escape($value);
+        if (array_key_exists("id", $values)) {
+            $id = $values["id"];
+            unset($values["id"]);
+            $this->update($values, $id);
+        } else {
+            $this->insert($values);
+        }
     }
 }
