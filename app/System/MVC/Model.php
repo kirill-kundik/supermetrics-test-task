@@ -61,13 +61,13 @@ class Model
 
     public function findAll()
     {
-        return $this->conn->query("SELECT * FROM $this->tablename");
+        return $this->conn->query("SELECT * FROM $this->tablename")->rows;
     }
 
     public function findById($id)
     {
         $res = $this->findBy(['id' => $id]);
-        if (empty($res)) {
+        if (!isset($res[0])) {
             throw new Exception("Record not found");
         }
         return $res[0];
@@ -90,7 +90,7 @@ class Model
                 $stmt .= " AND ";
         }
 
-        return $this->conn->query($stmt);
+        return $this->conn->query($stmt)->rows;
     }
 
     public function delete($id = null)
