@@ -7,8 +7,8 @@ class JsonView extends View
     public function render(?array $content = null): ?string
     {
         if (!is_null($content))
-            return json_encode($content);
+            return json_encode(["result" => $content]);
         else
-            null;
+            return json_encode(["result" => null]);
     }
 }

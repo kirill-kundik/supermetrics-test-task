@@ -12,6 +12,7 @@ define('SYSTEM', SCRIPT . 'System/');
 define('CONTROLLERS', SCRIPT . $appFolder . '/Controllers/');
 define('MODELS', SCRIPT . $appFolder . '/Models/');
 define('VIEWS', SCRIPT . $appFolder . '/Views/');
+define('SERVICES', SCRIPT . $appFolder . '/Services/');
 
 // Config Database
 define('DATABASE', [

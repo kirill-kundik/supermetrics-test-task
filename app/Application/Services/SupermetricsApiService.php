@@ -1,14 +1,15 @@
 <?php
 
+
 class SupermetricsApiService
 {
     private string $apiBaseUrl;
 //    private string $clientId; // if client id only for this application not for all users'
-    private UserModel $user;
+    private UserService $userService;
 
-    public function __construct(UserModel $user)
+    public function __construct(UserService $userService)
     {
-        $this->model = $user;
+        $this->userService = $userService;
         $this->apiBaseUrl = getenv('SUPERMETRICS_API_URL');
 //        $this->clientId = getenv('SUPERMETRICS_API_CLIENT_ID'); // if client id only for this application not for all users'
     }
@@ -32,10 +33,13 @@ class SupermetricsApiService
         $retry = true
     )
     {
-        if ($this->model->getSlTokenExpiredAt() < new \DateTime())
+        $now = new DateTime();
+
+        if ($this->userService->getTokenExpiredAt() < $now)
             $this->refreshToken();
 
-        $params["sl_token"] = $this->model->getSlToken();
+        $params["sl_token"] = $this->userService->getSlToken();
+
         $res = $this->request($method, $params, $verb);
 
         $response = $res["response"];
@@ -49,9 +53,9 @@ class SupermetricsApiService
                 if ($retry)
                     $this->fetch($method, $params, $verb, false);
             } else
-                throw new \RuntimeException($error, $errno);
+                throw new RuntimeException($error, $errno);
         } else if ($errno !== 0) {
-            throw new \RuntimeException($error, $errno);
+            throw new RuntimeException($error, $errno);
         }
 
         return json_decode($response, true);
@@ -60,31 +64,36 @@ class SupermetricsApiService
     private function refreshToken()
     {
         $params = [
-            'client_id' => $this->model->getClientId(),
-            'email' => $this->model->getEmail(),
-            'name' => $this->model->getName(),
+            'client_id' => $this->userService->getClientId(),
+            'email' => $this->userService->getEmail(),
+            'name' => $this->userService->getName(),
         ];
         $res = $this->request('register', $params, 'POST');
         if ($res["errno"] !== 0) {
-            throw new \RuntimeException($res["error"], $res["errno"]);
+            throw new RuntimeException($res["error"], $res["errno"]);
         }
         $response = json_decode($res["response"], true);
 
-        $expiredAt = new \DateTime(); //now
-        $expiredAt->add(new \DateInterval('PT1H'));//add 1 hour
+        $expiredAt = new DateTime(); //now
+        $expiredAt->add(new DateInterval('PT1H'));//add 1 hour
 
-        $this->model->setSlToken($response["data"]["sl_token"]);
-        $this->model->setSlTokenExpiredAt($expiredAt);
-        $this->model->save();
+        $this->userService->setSlToken($response["data"]["sl_token"]);
+        $this->userService->setTokenExpiredAt($expiredAt);
+        $this->userService->save();
     }
 
     private function request($method, $params, $verb)
     {
-        $ch = curl_init($this->apiBaseUrl . '/' . $method);
+        $url = $this->apiBaseUrl . '/' . $method;
+        if ($verb == "GET")
+            $url .= "?" . http_build_query($params);
+
+        $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        if ($verb == "POST")
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
 
         $response = curl_exec($ch);
         $error = curl_error($ch);
