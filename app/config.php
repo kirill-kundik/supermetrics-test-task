@@ -8,7 +8,7 @@ define('HTTP_URL', '/' . substr_replace(trim($_SERVER['REQUEST_URI'], '/'), '', 
 $appFolder = getenv("APP_FOLDER");
 
 define('SCRIPT', str_replace('\\', '/', rtrim(__DIR__, '/')) . '/');
-define('SYSTEM', SCRIPT . 'System/');
+define('SYSTEM', SCRIPT . 'Core/');
 define('CONTROLLERS', SCRIPT . $appFolder . '/Controllers/');
 define('MODELS', SCRIPT . $appFolder . '/Models/');
 define('VIEWS', SCRIPT . $appFolder . '/Views/');
