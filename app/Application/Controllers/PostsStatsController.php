@@ -17,19 +17,34 @@ class PostsStatsController extends Controller
         $name = $this->request->post("name");
         $clientId = $this->request->post("client_id");
 
+        $stats = $this->processUserStatsRequest($email, $name, $clientId);
+
+        $msg = $this->view->render($stats);
+        $this->send($msg);
+    }
+
+    public function test()
+    {
+        $stats = $this->processUserStatsRequest(
+            "your@email.address",
+            "Your Name",
+            "ju16a6m81mhid5ue1z3v2g0uh"
+        );
+
+        $msg = $this->view->render($stats);
+        $this->send($msg);
+    }
+
+    private function processUserStatsRequest($email, $name, $clientId)
+    {
         $userService = new UserService(
             $this->model, ["email" => $email, "name" => $name, "client_id" => $clientId]
         );
 
         $supermetricsApiService = new SupermetricsApiService($userService);
         $posts = $supermetricsApiService->fetchPosts();
+        $stats = (new PostsStatisticsService($posts))->getStats();
 
-        $msg = $this->view->render($posts);
-        $this->send($msg);
-    }
-
-    public function test()
-    {
-        echo 'hello';
+        return $stats;
     }
 }
