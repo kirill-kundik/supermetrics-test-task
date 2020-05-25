@@ -36,8 +36,8 @@ class Model
 
         $stmt = "UPDATE $this->tablename SET ";
         foreach ($fields as $key => $field) {
-            $value = $values[$key];
-            $stmt .= "$field = $value";
+            $value = $values[$field];
+            $stmt .= "$field = '$value'";
 
             if ($key < count($fields) - 1)
                 $stmt .= ", ";
@@ -54,7 +54,7 @@ class Model
         $fields = array_map(array(&$this, "escapeFunction"), array_keys($values));
         $values = array_map(array(&$this, "escapeFunction"), $values);
 
-        $stmt = "INSERT INTO $this->tablename(" . join(", ", $fields) . ") VALUES (" . join(",", $values) . ")";
+        $stmt = "INSERT INTO $this->tablename(" . join(", ", $fields) . ") VALUES ('" . join("', '", $values) . "')";
         $this->conn->query($stmt);
         return $this->conn->getLastId();
     }
@@ -83,8 +83,8 @@ class Model
             $stmt .= " WHERE ";
 
         foreach ($fields as $key => $field) {
-            $value = $values[$key];
-            $stmt .= "$field = $value";
+            $value = $values[$field];
+            $stmt .= "$field = '$value'";
 
             if ($key < count($fields) - 1)
                 $stmt .= " AND ";
@@ -105,12 +105,15 @@ class Model
 
     public function save($values)
     {
-        if (array_key_exists("id", $values)) {
-            $id = $values["id"];
-            unset($values["id"]);
-            $this->update($values, $id);
+        $filteredValues = array_filter($values, fn($value) => !is_null($value) && $value !== '');
+        if (array_key_exists("id", $filteredValues)) {
+            $id = $filteredValues["id"];
+            unset($filteredValues["id"]);
+            $this->update($filteredValues, $id);
         } else {
-            $this->insert($values);
+            $id = $this->insert($filteredValues);
         }
+        $values["id"] = $id;
+        return $values;
     }
 }
