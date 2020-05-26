@@ -43,8 +43,6 @@ class PostsStatsController extends Controller
 
         $supermetricsApiService = new SupermetricsApiService($userService);
         $posts = $supermetricsApiService->fetchPosts();
-        $stats = (new PostsStatisticsService($posts))->getStats();
-
-        return $stats;
+        return (new PostsStatisticsService($posts))->getStats();
     }
 }
