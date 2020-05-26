@@ -1,5 +1,5 @@
 <?php
 
-$router->post('/stats', 'postsStats@post');
+$router->post('/api/v1/stats', 'postsStats@post');
 
-$router->get('/statsTest', 'postsStats@test');
+$router->get('/api/v1/statsTest', 'postsStats@test');
