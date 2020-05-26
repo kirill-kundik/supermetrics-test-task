@@ -24,19 +24,13 @@ class PostsStatisticsService
     {
         $postDate = PostsStatisticsService::parsePostDate($post);
 
-        $yearDict = $this->stats[$postDate["year"]] ?? [];
+        $yearsDict = $this->stats["years"] ?? [];
         $usersDict = $this->stats["users"] ?? [];
-        $monthsDict = $yearDict["months"] ?? [];
-        $weeksDict = $yearDict["weeks"] ?? [];
 
-        $monthsDict = PostsStatisticsService::updateMonthsStats($postDate["month"], $post, $monthsDict);
-        $weeksDict = PostsStatisticsService::updateWeeksStats($postDate["week"], $post, $weeksDict);
         $usersDict = PostsStatisticsService::updateUserStats($postDate, $post, $usersDict);
+        $yearsDict = PostsStatisticsService::updateYearsStats($postDate, $post, $yearsDict);
 
-        $yearDict["months"] = $monthsDict;
-        $yearDict["weeks"] = $weeksDict;
-
-        $this->stats[$postDate["year"]] = $yearDict;
+        $this->stats["years"] = $yearsDict;
         $this->stats["users"] = $usersDict;
     }
 
@@ -59,8 +53,27 @@ class PostsStatisticsService
         return ["year" => $postYear, "month" => $postMonth, "week" => $postWeek];
     }
 
-    private static function updateMonthsStats($month, $post, $monthsDict)
+    private static function updateYearsStats($postDate, $post, $yearsDict)
     {
+        $yearDict = $yearsDict[$postDate["year"]] ?? [];
+        $monthsDict = $yearDict["months"] ?? [];
+        $weeksDict = $yearDict["weeks"] ?? [];
+
+        $monthsDict = PostsStatisticsService::updateMonthsStats($postDate, $post, $monthsDict);
+        $weeksDict = PostsStatisticsService::updateWeeksStats($postDate, $post, $weeksDict);
+
+        $yearDict["months"] = $monthsDict;
+        $yearDict["weeks"] = $weeksDict;
+
+        $yearsDict[$postDate["year"]] = $yearDict;
+
+        return $yearsDict;
+    }
+
+    private static function updateMonthsStats($postDate, $post, $monthsDict)
+    {
+        $month = $postDate["month"];
+
         $monthDict = $monthsDict[$month] ?? [];
         $monthTotalPosts = $monthDict["total_posts"] ?? 0;
         $monthMaxPostLength = $monthDict["max_post_length"] ?? -1;
@@ -81,8 +94,10 @@ class PostsStatisticsService
         return $monthsDict;
     }
 
-    private static function updateWeeksStats($week, $post, $weeksDict)
+    private static function updateWeeksStats($postDate, $post, $weeksDict)
     {
+        $week = $postDate["week"];
+
         $weekDict = $weeksDict[$week] ?? [];
         $weekCount = $weekDict["total_posts"] ?? 0;
         $weekDict["total_posts"] = $weekCount + 1;
@@ -94,7 +109,7 @@ class PostsStatisticsService
     private static function updateUserStats($postDate, $post, $usersDict)
     {
         $userDict = $usersDict[$post["from_id"]] ?? [];
-        if (count($userDict) == 0) {
+        if (empty($userDict)) {
             $userDict["name"] = $post["from_name"];
             $userDict["id"] = $post["from_id"];
         }
@@ -113,6 +128,8 @@ class PostsStatisticsService
         $userTotalPostsCount = $userDict["total_posts"] ?? 0;
         $userDict["total_posts"] = $userTotalPostsCount + 1;
         $userDict["average_per_month"] = $userTotalPostsCount / count($userDict["stats_dates"]);
+
+        $usersDict[$post["from_id"]] = $userDict;
 
         return $usersDict;
     }
