@@ -16,14 +16,10 @@ class SupermetricsApiService
 
     public function fetchPosts($pagesCount = 10)
     {
-        $result = [];
-
         for ($i = 1; $i <= $pagesCount; $i++) {
             $res = $this->fetch('posts', ['page' => $i]);
-            $result = array_merge($result, $res["data"]["posts"]);
+            yield $res["data"]["posts"];
         }
-
-        return $result;
     }
 
     private function fetch(

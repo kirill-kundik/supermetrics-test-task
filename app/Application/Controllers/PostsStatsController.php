@@ -42,7 +42,12 @@ class PostsStatsController extends Controller
         );
 
         $supermetricsApiService = new SupermetricsApiService($userService);
-        $posts = $supermetricsApiService->fetchPosts();
-        return (new PostsStatisticsService($posts))->getStats();
+        $postsStatsService = new PostsStatisticsService();
+
+        foreach ($supermetricsApiService->fetchPosts() as $postsOnPage)
+            foreach ($postsOnPage as $post)
+                $postsStatsService->updateStats($post);
+
+        return $postsStatsService->getStats();
     }
 }
