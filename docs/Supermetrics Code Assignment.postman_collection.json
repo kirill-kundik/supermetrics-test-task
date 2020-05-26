@@ -1,0 +1,73 @@
+{
+	"info": {
+		"_postman_id": "b3f17d6a-fe22-443e-8119-dd987b082190",
+		"name": "Supermetrics Code Assignment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Posts Statistics for User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"your@email.address\",\n\t\"name\": \"Your Name\", \n\t\"client_id\": \"ju16a6m81mhid5ue1z3v2g0uh\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/stats",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Posts Statistics Test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/statsTest",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"statsTest"
+					],
+					"query": [
+						{
+							"key": "kek",
+							"value": "k",
+							"disabled": true
+						},
+						{
+							"key": "kekk",
+							"value": "k",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
